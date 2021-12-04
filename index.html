@@ -32,9 +32,11 @@
         let referrer = document.referrer
         document.getElementById("referrer").innerText = referrer
         if (referrer.length == 0) referrer = 'http://localhost:3000'
+        // need consistency in generated return url
+        if (!referrer.endsWith('/')) referrer = referrer + "/" 
         
         document.getElementById("backbutton").onclick = function() {
-            location.href = `${referrer}/${returnpath}?sessionid=${sessionid}`
+            location.href = `${referrer}${returnpath}?sessionid=${sessionid}`
         }
     </script>
 </body>
