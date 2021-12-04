@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway Stub</title>
+</head>
+<body>
+    <h1>Payment Gateway Stub</h1>
+    <p>Running on https://expensesmgmt.z35.web.core.windows.net/PaymentGatewayStub.html</p>
+    <p>
+        This page acts as a stub allowing testing of the redirect functionality of a site which uses an external payment gateway.<br/>
+        It assumes that it will be told a session id and a return path which may be encoded e.g. directory%2Fsubdirectory.<br/>
+        It will use the referrer header to ensure that we're going back to the site that redirected us here originally.<br/>
+        If this is not available it assumes we're running on http://localhost:3000<br/>
+        The back button will use these 3 pieces of information to generate a return url.
+    </p>
+    <p><strong>sessionid</strong> query string parameter: <span id="sessionid"></span></p>
+    <p><strong>returnpath</strong> query string parameter: <span id="returnpath"></span></p>
+    <p><strong>referrer</strong> header: <span id="referrer"></span></p>
+    <button id="backbutton">Back</button>
+    <script>
+        // URL = scheme://host:port/path?query
+        const queryParams = new URLSearchParams(window.location.search)
+        const sessionid = queryParams.get('sessionid')
+        document.getElementById("sessionid").innerText = sessionid
+
+        const returnpath = queryParams.get('returnpath')
+        document.getElementById("returnpath").innerText = returnpath
+        
+        let referrer = document.referrer
+        document.getElementById("referrer").innerText = referrer
+        if (referrer.length == 0) referrer = 'http://localhost:3000'
+        
+        document.getElementById("backbutton").onclick = function() {
+            location.href = `${referrer}/${returnpath}?sessionid=${sessionid}`
+        }
+    </script>
+</body>
+</html>
