@@ -8,35 +8,57 @@
 </head>
 <body>
     <h1>Payment Gateway Stub</h1>
-    <p>Running on https://kind-grass-07eb6d703.azurestaticapps.net/</p>
-    <p>
-        This page acts as a stub allowing testing of the redirect functionality of a site which uses an external payment gateway.<br/>
-        It assumes that it will be told a session id and a return path which may be encoded e.g. directory%2Fsubdirectory.<br/>
-        It will use the referrer header to ensure that we're going back to the site that redirected us here originally.<br/>
-        If this is not available it assumes we're running on http://localhost:3000<br/>
-        The back button will use these 3 pieces of information to generate a return url.
-    </p>
-    <p><strong>sessionid</strong> query string parameter: <span id="sessionid"></span></p>
-    <p><strong>returnpath</strong> query string parameter: <span id="returnpath"></span></p>
-    <p><strong>referrer</strong> header: <span id="referrer"></span></p>
-    <button id="backbutton">Back</button>
+    <p>This page acts as a stub allowing testing of the redirect functionality of a site which uses an external payment gateway.
+        <br/>
+        Running on https://kind-grass-07eb6d703.azurestaticapps.net/</p>
+    </p> 
+    <ul>
+        <li>The referrer header is used to ensure that we're going back to the site that brought us here originally.<br/>
+        If this is not available it assumes we're running on http://localhost:3000</li>
+        <li>Expects a return path (which may be encoded e.g. directory%2Fsubdirectory)</li>
+        <li>Handles an optional sessionid parameter, will send null if not set (if this is handled by client in return path instead)</li>
+        <li>Select what status to return and preview the url before redirecting.</li>
+    </ul>
+    <p><strong>referrer header </strong> <span id="referrer"></span></p>
+    <p><strong>returnpath </strong> <span id="returnpath"></span></p>
+    <p><strong>sessionid </strong> <span id="sessionid"></span></p>
+    <label>
+        <strong>Status</strong>
+        <input type="text" id="paymentstatus" value="CANCELLED"/>
+    </label>
+    <p><strong>redirect</strong> : <span id="redirecturl"></span></p>
+    <button id="submit">Submit</button>
     <script>
         // URL = scheme://host:port/path?query
-        const queryParams = new URLSearchParams(window.location.search)
-        const sessionid = queryParams.get('sessionid')
-        document.getElementById("sessionid").innerText = sessionid
-
-        const returnpath = queryParams.get('returnpath')
-        document.getElementById("returnpath").innerText = returnpath
-        
-        let referrer = document.referrer
-        document.getElementById("referrer").innerText = referrer
+            
+        let referrer = document.referrer        
         if (referrer.length == 0) referrer = 'http://localhost:3000'
         // need consistency in generated return url
         if (!referrer.endsWith('/')) referrer = referrer + "/" 
+
+        const queryParams = new URLSearchParams(window.location.search)
+        const returnpath = queryParams.get('returnpath')        
         
-        document.getElementById("backbutton").onclick = function() {
-            location.href = `${referrer}${returnpath}?sessionid=${sessionid}`
+        const sessionid = queryParams.get('sessionid')
+
+        let paymentstatus = "CANCELLED"
+        
+        let redirecturl = `${referrer}${returnpath}?sessionid=${sessionid}&paymentstatus=${paymentstatus}`
+        
+        document.getElementById("referrer").innerText = referrer
+        document.getElementById("returnpath").innerText = returnpath
+        document.getElementById("sessionid").innerText = sessionid
+        document.getElementById("redirecturl").innerText = redirecturl
+
+        document.getElementById("paymentstatus").onkeyup = function(e) {
+            paymentstatus = e.value
+            redirecturl = `${referrer}${returnpath}?sessionid=${sessionid}&paymentstatus=${paymentstatus}`
+            document.getElementById("redirecturl").innerText = redirecturl
+        }
+
+        document.getElementById("submit").onclick = function() {
+            const paymentStatus = document.getElementById("paymentstatus").value
+            location.href = redirecturl
         }
     </script>
 </body>
