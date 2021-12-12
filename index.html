@@ -22,12 +22,23 @@
     <p><strong>referrer header </strong> <span id="referrer"></span></p>
     <p><strong>returnpath </strong> <span id="returnpath"></span></p>
     <p><strong>sessionid </strong> <span id="sessionid"></span></p>
+    
     <label>
         <strong>Status</strong>
-        <input type="text" id="paymentstatus" value="CANCELLED"/>
+        <select id="statusselect">
+            <option value="CANCELLED">CANCELLED</option>
+            <option value="COMPLETED">COMPLETED</option>
+            <option value="ERROR">ERROR</option>
+        </select>
     </label>
+    <label>
+        Override
+        <input type="text" id="paymentstatus" value=""/>
+    </label>
+
     <p><strong>redirect</strong> : <span id="redirecturl"></span></p>
     <button id="submit">Submit</button>
+    
     <script>
         // URL = scheme://host:port/path?query
             
@@ -50,8 +61,15 @@
         document.getElementById("sessionid").innerText = sessionid
         document.getElementById("redirecturl").innerText = redirecturl
 
+        document.getElementById("statusselect").onchange = function(e) {
+            paymentstatus = e.target.value
+            redirecturl = `${referrer}${returnpath}?sessionid=${sessionid}&paymentstatus=${paymentstatus}`
+            document.getElementById("redirecturl").innerText = redirecturl
+            document.getElementById("paymentstatus").value = ""
+        }
+
         document.getElementById("paymentstatus").onkeyup = function(e) {
-            paymentstatus = e.value
+            paymentstatus = e.target.value
             redirecturl = `${referrer}${returnpath}?sessionid=${sessionid}&paymentstatus=${paymentstatus}`
             document.getElementById("redirecturl").innerText = redirecturl
         }
